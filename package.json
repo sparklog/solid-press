@@ -1,5 +1,6 @@
 {
-  "name": "example-with-tailwindcss",
+  "name": "solid-press",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vinxi dev",
