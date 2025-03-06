@@ -1,18 +1,118 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
-  --background-rgb: 214, 219, 220;
+  /* 基础颜色变量 */
+  --background-rgb: 255, 255, 255;
   --foreground-rgb: 0, 0, 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background-rgb: 0, 0, 0;
-    --foreground-rgb: 255, 255, 255;
-  }
+  --text-primary: 33, 33, 33;
+  --text-secondary: 51, 51, 51;
+  --link-color: 29, 78, 216;
+  --code-bg: 237, 242, 247;
+  --code-text: 74, 85, 104;
+  --element-bg: 214, 219, 220;
 }
 
 body {
   background: rgb(var(--background-rgb));
   color: rgb(var(--foreground-rgb));
+}
+
+/* Typography 样式增强 */
+.prose {
+  /* 文本元素 */
+  color: rgb(var(--text-primary));
+  
+  & p, & li, & blockquote {
+    color: rgb(var(--text-secondary));
+  }
+  
+  & h1, & h2, & h3, & h4 {
+    color: rgb(var(--text-primary));
+    font-weight: 600;
+  }
+  
+  & a {
+    color: rgb(var(--link-color));
+    text-decoration: underline;
+  }
+  
+  /* 列表样式 */
+  & ul li::before {
+    background-color: rgb(var(--text-secondary));
+  }
+  
+  & ol li::before {
+    color: rgb(var(--text-secondary));
+  }
+  
+  /* 表格样式 */
+  & table {
+    background-color: rgb(var(--background-rgb));
+    border: 1px solid rgba(var(--element-bg), 0.8);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  & thead {
+    background-color: rgba(var(--element-bg), 0.5);
+    
+    & tr {
+      height: 3rem;
+    }
+  }
+  
+  & tr {
+    border-bottom: 1px solid rgba(var(--text-secondary), 0.2);
+  }
+  
+  & th {
+    color: rgb(var(--text-primary));
+    font-weight: 600;
+    vertical-align: middle;
+    padding-block: 0.75rem;
+    height: 3rem;
+    line-height: 1.5;
+  }
+  
+  & td {
+    color: rgb(var(--text-secondary));
+    vertical-align: middle;
+  }
+  
+  /* 代码样式 */
+  & code, & pre {
+    background-color: rgb(var(--code-bg));
+    color: rgb(var(--code-text));
+  }
+  
+  & code {
+    font-weight: normal;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+  }
+  
+  & pre {
+    border: 1px solid rgba(var(--text-secondary), 0.1);
+    box-shadow: none;
+    
+    & code {
+      background-color: transparent;
+      padding: 0;
+      border-radius: 0;
+    }
+  }
+  
+  /* 其他元素 */
+  & hr {
+    border-color: rgba(var(--element-bg), 0.8);
+    margin: 2em 0;
+  }
+  
+  & blockquote {
+    background-color: rgb(var(--element-bg));
+    border-left: 4px solid rgba(var(--text-secondary), 0.5);
+    padding: 0.5em 1em;
+    margin: 1.5em 0;
+  }
 }
