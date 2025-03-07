@@ -16,11 +16,13 @@
     "@tiptap/extension-link": "^2.11.5",
     "@tiptap/extension-placeholder": "^2.11.5",
     "@tiptap/extension-text-align": "^2.11.5",
+    "@tiptap/extension-typography": "^2.11.5",
     "@tiptap/pm": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
     "remark-gfm": "^4.0.1",
     "solid-js": "^1.9.5",
     "solid-markdown": "^2.0.14",
+    "tiptap-markdown": "^0.8.10",
     "vinxi": "^0.5.3"
   },
   "devDependencies": {
