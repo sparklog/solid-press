@@ -37,7 +37,7 @@ export async function getValidSession(): Promise<SessionData | null> {
         return null;
       }
       if (data.session) {
-        const _ = updateSession<SessionData>(sessionConfig, { session: data.session }); //更新session
+        const _ = await updateSession<SessionData>(sessionConfig, { session: data.session }); //更新session
       }
     }
   }

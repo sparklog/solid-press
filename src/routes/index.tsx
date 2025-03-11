@@ -27,6 +27,9 @@ export default function Home() {
           <h1 class="text-4xl font-bold text-center">
             Welcome {user()?.email} 
           </h1>
+          <A class="mt-4 text-center" href="/editor">
+            Go to Editor
+          </A>
         </Show>
       </div>
     </main>
