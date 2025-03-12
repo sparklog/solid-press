@@ -54,6 +54,20 @@ interface ArticleTableGet {
   created_at: string; // 创建时间
 }
 
+// ts中使用数据库中返回数据的类型，不暴露数据库的表结构。对应的是 ArticleTableGet
+interface Article{
+  id: string;
+  title: string;
+  slug: string;
+  summary: string | null;
+  status: Status;
+  jsonContent: object;
+  htmlContent: string;
+  user_id: string; // 添加 user_id 字段
+  updated_at: string; // 更新时间
+  created_at: string; // 创建时间
+}
+
 // 数据写入数据库的action
 const persistEditorAction = action(async (props: PersistEditorActionProps) => {
   "use server";
@@ -237,8 +251,20 @@ const getArticle = query(async (slug: string) => {
     }
 
     const data: ArticleTableGet[] = await response.json();
-    console.log("获取的文章数据:", data);
-    return data[0];
+    const article: Article = {
+      id: data[0].id,
+      title: data[0].title,
+      slug: data[0].slug,
+      summary: data[0].summary,
+      status: data[0].status,
+      jsonContent: data[0].json_content,
+      htmlContent: data[0].html_content,
+      user_id: data[0].user_id,
+      updated_at: data[0].updated_at,
+      created_at: data[0].created_at,
+    }
+    console.log("获取的文章数据:", article);
+    return article;
   } catch (error) {
     console.error("Error fetching article:", error);
     throw new Error(`Failed to fetch article from database: ${error}`);

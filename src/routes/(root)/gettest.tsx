@@ -16,7 +16,7 @@ export default function GetTest() {
 
   return (
     <Show when ={article()} fallback={<div>Loading...</div>}>
-        <div class="prose lg:prose-xl" innerHTML={article()?.html_content} />
+        <div class="prose lg:prose-xl" innerHTML={article()?.htmlContent} />
     </Show>
 
 
