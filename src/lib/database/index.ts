@@ -64,8 +64,8 @@ interface Article{
   jsonContent: object;
   htmlContent: string;
   user_id: string; // 添加 user_id 字段
-  updated_at: string; // 更新时间
-  created_at: string; // 创建时间
+  updatedAt: string; // 更新时间
+  createdAt: string; // 创建时间
 }
 
 // 数据写入数据库的action
@@ -260,8 +260,8 @@ const getArticle = query(async (slug: string) => {
       jsonContent: data[0].json_content,
       htmlContent: data[0].html_content,
       user_id: data[0].user_id,
-      updated_at: data[0].updated_at,
-      created_at: data[0].created_at,
+      updatedAt: data[0].updated_at,
+      createdAt: data[0].created_at,
     }
     console.log("获取的文章数据:", article);
     return article;

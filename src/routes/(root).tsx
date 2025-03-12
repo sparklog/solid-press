@@ -1,4 +1,9 @@
-import { createAsync, RouteDefinition, RouteSectionProps } from "@solidjs/router";
+import {
+  A,
+  createAsync,
+  RouteDefinition,
+  RouteSectionProps,
+} from "@solidjs/router";
 import { authenticateUser } from "~/lib/auth";
 import { Show } from "solid-js";
 
@@ -18,18 +23,25 @@ export default function Layout(props: RouteSectionProps) {
         </div>
         <nav class="mx-auto">
           <ul class="flex space-x-4">
-            <li>gettest</li>
+            <li>
+              <A href="/gettest">gettest</A>
+            </li>
           </ul>
         </nav>
         <div class="auth">
-          <Show when={user()} fallback={<button class="px-4 py-2 bg-blue-500 text-white rounded">Login</button>}>
+          <Show
+            when={user()}
+            fallback={
+              <button class="px-4 py-2 bg-blue-500 text-white rounded">
+                Login
+              </button>
+            }
+          >
             {(user) => <div>{user().email}</div>}
           </Show>
         </div>
       </header>
-      <main class="flex-grow container mx-auto">
-        {props.children}
-      </main>
+      <main class="flex-grow container mx-auto">{props.children}</main>
       <footer class="border-t p-4 text-center text-gray-500">
         <p>© {new Date().getFullYear()} SolidPress. All rights reserved.</p>
       </footer>
