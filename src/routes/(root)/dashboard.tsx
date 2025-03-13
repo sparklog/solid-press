@@ -1,7 +1,11 @@
-import { createSignal, Show, For } from "solid-js";
+import { createSignal, Show, For, onMount } from "solid-js";
 import { createAsync, RouteDefinition } from "@solidjs/router";
 import { getArticle } from "~/lib/database";
 import type { ArticleTableGet } from "~/lib/database";
+import { 
+  Menu, X, ChevronLeft, ChevronRight, Edit, Eye, EyeOff, 
+  Clock, CalendarDays, Tag, FileText, Plus
+} from "lucide-solid";
 
 // 示例数据
 const SAMPLE_ARTICLES: ArticleTableGet[] = [
@@ -65,96 +69,253 @@ export default function Dashboard() {
     setShowSidebar(!showSidebar());
   };
 
+  // 初始化时检测屏幕尺寸并设置侧边栏状态
+  onMount(() => {
+    // 检测是否为移动设备
+    const isMobileView = window.matchMedia("(max-width: 768px)").matches;
+    if (isMobileView) {
+      setShowSidebar(false);
+    }
+  });
+
+  // 文章选择时滚动到顶部
+  const handleArticleSelect = (article: ArticleTableGet) => {
+    setSelectedArticle(article);
+    
+    // 平滑滚动到顶部
+    document.querySelector('main')?.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
+    // 在移动设备上点击文章后自动隐藏侧边栏
+    if (window.matchMedia("(max-width: 768px)").matches) {
+      setShowSidebar(false);
+    }
+  };
+
   return (
-    <div class="flex flex-col md:flex-row h-[calc(100vh-160px)] relative">
-      {/* 移动设备显示的汉堡菜单 */}
-      {/* <button 
-        onClick={toggleSidebar} 
-        class="md:hidden fixed top-20 left-4 z-20 bg-blue-500 text-white p-2 rounded-full shadow-lg"
-      >
-        {showSidebar() ? '×' : '≡'}
-      </button> */}
-      
-      {/* 左侧博客列表 */}
-      <div 
-        class={`${
-          showSidebar() ? 'translate-x-0' : '-translate-x-full md:-translate-x-full'
-        } transition-transform duration-300 ease-in-out w-full md:w-64 bg-gray-50 overflow-y-auto border-r border-gray-200 absolute md:relative z-10 h-full shadow-md`}
-      >
-        <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-100">
-          <h2 class="text-xl font-bold">文章列表</h2>
+    <div class="flex h-screen bg-gray-50 overflow-hidden">
+      {/* 移动端顶部导航栏 */}
+      <div class="md:hidden fixed top-0 left-0 right-0 z-30 bg-white shadow-sm border-b border-gray-200">
+        <div class="flex items-center justify-between px-4 py-3">
           <button 
             onClick={toggleSidebar}
-            class="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-200"
-            aria-label="切换侧边栏"
+            class="text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-1 transition-colors duration-200"
+            aria-label="菜单"
           >
-            {showSidebar() ? '←' : '→'}
+            <Menu size={24} />
+          </button>
+          <h1 class="text-lg font-semibold text-gray-900">文章管理</h1>
+          <button class="text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-1 transition-colors duration-200">
+            <Plus size={24} />
           </button>
         </div>
-        <Show when={showSidebar()}>
-        <ul class="divide-y divide-gray-200">
-          <For each={articles()}>
-            {(article) => (
-              <li 
-                class={`p-4 cursor-pointer hover:bg-gray-200 ${
-                  selectedArticle()?.id === article.id ? 'bg-blue-100' : ''
-                }`}
-                onClick={() => setSelectedArticle(article)}
-              >
-                <div class="font-medium">{article.title}</div>
-                <div class="text-sm text-gray-500">
-                  {new Date(article.updated_at).toLocaleDateString()}
-                </div>
-                <div class="text-xs mt-1 inline-block px-2 py-1 rounded-full bg-gray-200">
-                  {article.status === 'public' ? '已发布' : '草稿'}
-                </div>
-              </li>
-            )}
-          </For>
-        </ul>
-        </Show>
       </div>
       
-      {/* 右侧文章内容 */}
+      {/* 侧边栏遮罩层（移动端） */}
       <div 
-        class={`flex-grow overflow-y-auto p-6 bg-white transition-all duration-300 ${
-          showSidebar() ? 'md:ml-0' : 'mx-auto container'
-        }`}
-        style={{"min-width": showSidebar() ? "calc(100% - 16rem)" : "100%"}}
+        class={`fixed inset-0 bg-black/30 z-20 md:hidden backdrop-blur-sm ${showSidebar() ? 'block' : 'hidden'}`}
+        onClick={toggleSidebar}
+      />
+      
+      {/* 左侧文章列表侧边栏 */}
+      <aside 
+        class={`
+          fixed md:static z-30 md:z-auto
+          h-full
+          bg-white border-r border-gray-200
+          transition-all duration-300 ease-in-out
+          flex flex-col
+          
+          ${showSidebar() 
+            ? 'w-[280px] md:w-[320px] translate-x-0 shadow-lg md:shadow-none' 
+            : 'w-[280px] -translate-x-full md:translate-x-0 md:w-0 md:overflow-hidden md:opacity-0 md:invisible md:border-r-0'
+          }
+        `}
       >
-        <Show when={selectedArticle()} fallback={<p class="text-center text-gray-500 mt-10">请选择一篇文章查看</p>}>
-          {(article) => (
-            <>
-              <div class="mb-6 bg-white p-5 rounded-lg shadow-sm border border-gray-100">
-                <div class="flex justify-between items-start mb-4">
-                  <h1 class="text-2xl font-bold">{article().title}</h1>
-                  <div class="flex gap-2">
-                    <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                      编辑
-                    </button>
-                    <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-                      {article().status === 'public' ? '取消发布' : '发布'}
-                    </button>
+        {/* 侧边栏头部 */}
+        <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+          <h2 class="text-xl font-semibold text-gray-900">文章列表</h2>
+          <div class="flex space-x-2">
+            <button 
+              class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+              aria-label="新建文章"
+            >
+              <Plus size={20} />
+            </button>
+            <button 
+              onClick={toggleSidebar}
+              class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200 hidden md:block"
+              aria-label="折叠侧边栏"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button 
+              onClick={toggleSidebar}
+              class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200 md:hidden"
+              aria-label="关闭侧边栏"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </div>
+        
+        {/* 搜索框 */}
+        <div class="p-4 border-b border-gray-200">
+          <div class="relative">
+            <input
+              type="text"
+              placeholder="搜索文章..."
+              class="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            />
+            <svg
+              class="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+        </div>
+        
+        {/* 文章列表 */}
+        <div class="flex-1 overflow-y-auto">
+          <ul class="divide-y divide-gray-200">
+            <For each={articles()}>
+              {(article) => (
+                <li 
+                  class={`
+                    p-4 cursor-pointer hover:bg-gray-50 transition-all duration-200
+                    ${selectedArticle()?.id === article.id 
+                      ? 'bg-blue-50 border-l-4 border-blue-500 pl-3' 
+                      : 'border-l-4 border-transparent'}
+                  `}
+                  onClick={() => handleArticleSelect(article)}
+                >
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-medium text-gray-900 truncate">{article.title}</h3>
+                    <span class={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition-colors duration-200 ${
+                      article.status === 'public' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {article.status === 'public' ? '已发布' : '草稿'}
+                    </span>
+                  </div>
+                  <p class="mt-1 text-sm text-gray-500 line-clamp-2">{article.summary}</p>
+                  <div class="flex items-center mt-2 text-xs text-gray-500">
+                    <CalendarDays size={14} class="mr-1" />
+                    {new Date(article.updated_at).toLocaleDateString()}
+                  </div>
+                </li>
+              )}
+            </For>
+          </ul>
+        </div>
+      </aside>
+      
+      {/* 右侧内容区域 */}
+      <main 
+        class={`
+          flex-1 overflow-y-auto 
+          pt-0 md:pt-6 pb-6 px-4 md:px-6
+          transition-all duration-300 ease-in-out
+          mt-16 md:mt-0
+          bg-gradient-to-b from-gray-50 to-white
+          ${showSidebar() ? '' : 'md:ml-0'}
+        `}
+      >
+        {/* 展开侧边栏按钮（当侧边栏隐藏时显示） */}
+        <button 
+          onClick={toggleSidebar}
+          class={`hidden md:flex fixed top-6 left-4 z-10 text-gray-700 hover:text-blue-600 items-center justify-center h-8 w-8 rounded-full bg-white shadow-md border border-gray-200 hover:bg-gray-50 transition-all duration-200 hover:scale-110 ${showSidebar() ? 'invisible' : 'visible'}`}
+          aria-label="展开侧边栏"
+        >
+          <ChevronRight size={18} />
+        </button>
+        
+        <div class={`
+          max-w-4xl mx-auto 
+          transition-all duration-500
+        `}>
+          <Show 
+            when={selectedArticle()} 
+            fallback={
+              <div class="flex flex-col items-center justify-center h-[80vh] text-center text-gray-500 animate-fadeIn">
+                <FileText size={48} class="text-gray-400 mb-4" />
+                <p class="text-xl font-medium">请选择一篇文章查看</p>
+                <p class="mt-2">或者创建一篇新文章开始写作</p>
+                <button class="mt-6 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                  <Plus size={16} class="mr-2" />
+                  新建文章
+                </button>
+              </div>
+            }
+          >
+            {(article) => (
+              <div class="animate-fadeIn">
+                {/* 文章操作栏 */}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 hover:shadow-md transition-shadow duration-200">
+                  <div class="flex flex-col md:flex-row md:items-center justify-between px-6 py-4 border-b border-gray-200">
+                    <h1 class="text-2xl font-bold text-gray-900 mb-4 md:mb-0">{article().title}</h1>
+                    <div class="flex flex-wrap gap-2">
+                      <button class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                        <Edit size={16} class="mr-1.5" />
+                        编辑
+                      </button>
+                      <button class={`
+                        inline-flex items-center px-3 py-2 border text-sm leading-4 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200
+                        ${article().status === 'public' 
+                          ? 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-gray-500 hover:text-red-600' 
+                          : 'border-transparent text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'}
+                      `}>
+                        {article().status === 'public' 
+                          ? <><EyeOff size={16} class="mr-1.5" />取消发布</> 
+                          : <><Eye size={16} class="mr-1.5" />发布</>
+                        }
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="px-6 py-4">
+                    <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-500">
+                      <div class="flex items-center">
+                        <CalendarDays size={16} class="mr-1.5" />
+                        <span>创建于: {new Date(article().created_at).toLocaleString()}</span>
+                      </div>
+                      <div class="flex items-center">
+                        <Clock size={16} class="mr-1.5" />
+                        <span>更新于: {new Date(article().updated_at).toLocaleString()}</span>
+                      </div>
+                      <div class="flex items-center">
+                        <Tag size={16} class="mr-1.5" />
+                        <span>状态: {article().status === 'public' ? '已发布' : '草稿'}</span>
+                      </div>
+                    </div>
+                    
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                      <h3 class="font-semibold text-gray-900 mb-2">摘要:</h3>
+                      <p class="text-gray-700">{article().summary || '无摘要'}</p>
+                    </div>
                   </div>
                 </div>
                 
-                <div class="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
-                  <div>创建于: {new Date(article().created_at).toLocaleString()}</div>
-                  <div>更新于: {new Date(article().updated_at).toLocaleString()}</div>
-                  <div>状态: {article().status === 'public' ? '已发布' : '草稿'}</div>
-                </div>
-                
-                <div class="p-4 bg-gray-50 rounded-lg mb-6 border border-gray-100">
-                  <h3 class="font-bold mb-2">摘要:</h3>
-                  <p>{article().summary || '无摘要'}</p>
+                {/* 文章内容 */}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
+                  <div class="px-6 py-2 bg-gradient-to-r from-blue-50 to-white border-b border-gray-200">
+                    <h2 class="font-medium text-gray-900">文章内容</h2>
+                  </div>
+                  <div class="prose max-w-none p-6" innerHTML={article().html_content} />
                 </div>
               </div>
-              
-              <div class="prose max-w-none bg-white p-6 rounded-lg shadow-sm border border-gray-100" innerHTML={article().html_content} />
-            </>
-          )}
-        </Show>
-      </div>
+            )}
+          </Show>
+        </div>
+      </main>
     </div>
   );
 } 
