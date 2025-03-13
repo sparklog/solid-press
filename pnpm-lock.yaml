@@ -44,6 +44,9 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^2.11.5
         version: 2.11.5
+      lucide-solid:
+        specifier: ^0.479.0
+        version: 0.479.0(solid-js@1.9.5)
       nanoid:
         specifier: ^5.1.3
         version: 5.1.3
@@ -2328,6 +2331,11 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
+
+  lucide-solid@0.479.0:
+    resolution: {integrity: sha512-e7e6r0eWLE90c7flMrzzwwXOS3E1zemoQB9c4LUB3i4v/xH3UdhaNX5Y4FIdXSrBxMSaLCVm6rCqg9qdT9ugzw==}
+    peerDependencies:
+      solid-js: ^1.4.7
 
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
@@ -5651,6 +5659,10 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+
+  lucide-solid@0.479.0(solid-js@1.9.5):
+    dependencies:
+      solid-js: 1.9.5
 
   magic-string@0.30.17:
     dependencies:
